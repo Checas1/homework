@@ -1,0 +1,208 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "D:\\Anaconda\\lib\\site-packages\\ipykernel_launcher.py:2: DeprecationWarning: `imread` is deprecated!\n",
+      "`imread` is deprecated in SciPy 1.0.0, and will be removed in 1.2.0.\n",
+      "Use ``imageio.imread`` instead.\n",
+      "  \n"
+     ]
+    }
+   ],
+   "source": [
+    "from scipy import misc\n",
+    "input_arr = misc.imread('АДОШ_Лб_1_v_15.jpg')\n",
+    "arr = []\n",
+    "i = 0\n",
+    "for temp in input_arr:\n",
+    "    arr.append([])\n",
+    "    for temp_ in temp:\n",
+    "         arr[i].append(int(sum(temp_) > 128))\n",
+    "    i+=1\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "class figure():\n",
+    "    min_x = 0\n",
+    "    max_x = 0\n",
+    "    min_y = 0\n",
+    "    max_y = 0\n",
+    "    \n",
+    "    def __init__(self,x,y):\n",
+    "        self.dots = []\n",
+    "        self.dots.append([x,y])\n",
+    "        self.min_x = x\n",
+    "        self.min_y = y\n",
+    "        self.max_x = 0\n",
+    "        self.max_y = 0\n",
+    "    def add(self, x, y):\n",
+    "            if([x-1, y] in self.dots or [x-1, y-1] in self.dots or [x, y-1] in self.dots or \n",
+    "               [x+1, y-1] in self.dots or [x+2, y-1] in self.dots or [x+3, y-1] in self.dots or \n",
+    "               [x+4, y-1] in self.dots or [x+5, y-1] in self.dots):\n",
+    "                self.dots.append([x,y])\n",
+    "                self.min_x = min(self.min_x,x)\n",
+    "                self.min_y = min(self.min_y,y)\n",
+    "                self.max_x = max(self.max_x,x)\n",
+    "                self.max_y = max(self.max_y,y)\n",
+    "                return True\n",
+    "            else:\n",
+    "                return False\n",
+    "    \n",
+    "    "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "figures = []\n",
+    "for i in range(len(arr)):\n",
+    "    for j in range(len(arr[i])):\n",
+    "        if(arr[i][j] == 0):\n",
+    "            test = 1\n",
+    "            for temp in figures:\n",
+    "                if(temp.add(j, i)):\n",
+    "                    test *= 0\n",
+    "                    break\n",
+    "            if(test == 1):\n",
+    "                figures.append(figure(j,i))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for i in range(len(figures)):\n",
+    "    for j in range(figures[i].min_x, figures[i].max_x+1):\n",
+    "        arr[figures[i].min_y][j] = 3\n",
+    "        arr[figures[i].max_y][j] = 3\n",
+    "\n",
+    "        arr[figures[i].min_y-1][j] = 3\n",
+    "        arr[figures[i].max_y+1][j] = 3\n",
+    "\n",
+    "        arr[figures[i].min_y - 2][j] = 3\n",
+    "        arr[figures[i].max_y + 2][j] = 3\n",
+    "\n",
+    "        arr[figures[i].min_y - 3][j] = 3\n",
+    "        arr[figures[i].max_y + 3][j] = 3\n",
+    "    for j in range(figures[i].min_y, figures[i].max_y+1):\n",
+    "        arr[j][figures[i].min_x] = 3\n",
+    "        arr[j][figures[i].max_x] = 3\n",
+    "\n",
+    "        arr[j][figures[i].min_x - 1] = 3\n",
+    "        arr[j][figures[i].max_x + 1] = 3\n",
+    "\n",
+    "        arr[j][figures[i].min_x - 2] = 3\n",
+    "        arr[j][figures[i].max_x + 2] = 3\n",
+    "\n",
+    "        arr[j][figures[i].min_x - 3] = 3\n",
+    "        arr[j][figures[i].max_x + 3] = 3"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "arr_res = []\n",
+    "for temp in arr:\n",
+    "    arr_res.append([])\n",
+    "    for temp_ in temp:\n",
+    "        if(temp_ == 1):\n",
+    "            arr_res[len(arr_res) - 1].append([255,255,255])\n",
+    "        elif(temp_ == 0):\n",
+    "            arr_res[len(arr_res) - 1].append([0,0,0])\n",
+    "        elif(temp_ == 3):\n",
+    "            arr_res[len(arr_res) - 1].append([255,0,0])\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<Figure size 432x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "%matplotlib inline \n",
+    "from matplotlib import pyplot as plt\n",
+    "plt.imshow(arr_res, interpolation='nearest')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from PIL import Image\n",
+    "import numpy as np\n",
+    "\n",
+    "img = Image.fromarray(np.array(arr_res), 'RGB')\n",
+    "img.save('my.jpg')\n",
+    "img.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "f= open('out.txt', 'w')\n",
+    "for temp in arr:\n",
+    "    f.write(str(temp) + '\\n')"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}
